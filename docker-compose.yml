@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  discovery-server:
+    container_name: discovery-server
+    build: ./discovery-server
+    ports:
+      - '8761:8761'
+
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    ports:
+      - '8080:8080'
+    depends_on:
+      - discovery-server
+
+  security-service:
+    container_name: security-service
+    build: ./security-service
+    ports:
+      - '8765:8765'
+    depends_on:
+      - discovery-server
+      - usersDB
+      - api-gateway
+
+  usersDB:
+    image: postgres:alpine
+    hostname: usersDB
+    container_name: usersDB
+    ports:
+      - '5438:5432'
+    environment:
+      POSTGRES_DB: usersDB
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - ./usersDB:/data
+

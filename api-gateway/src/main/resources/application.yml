@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: security-service
+          uri: lb://security-service
+          predicates:
+            - Path=/auth/**
