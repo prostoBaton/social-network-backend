@@ -39,3 +39,22 @@ services:
     volumes:
       - ./usersDB:/data
 
+  publication-service:
+    build: ./publication-service
+    depends_on:
+      - discovery-server
+      - api-gateway
+      - publicationsDB
+
+  publicationsDB:
+    image: mongo
+    hostname: publicationsDB
+    container_name: publicationsDB
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: publicationsDB
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./publicationsDB:/data

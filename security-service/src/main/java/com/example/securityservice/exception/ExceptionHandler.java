@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class ExceptionHandler {
 
-    public ResponseEntity<ErrorResponce> userNotFound(EntityNotFoundException e){
-        ErrorResponce responce = new ErrorResponce("User not found", LocalDateTime.now());
-        return  new ResponseEntity<>(responce, HttpStatusCode.valueOf(404));
+    @org.springframework.web.bind.annotation.ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> userNotFound(EntityNotFoundException e){
+        ErrorResponse response = new ErrorResponse("User not found", LocalDateTime.now());
+        return  new ResponseEntity<>(response, HttpStatusCode.valueOf(404));
     }
 }

@@ -4,6 +4,7 @@ import com.example.securityservice.dto.RequestDto;
 import com.example.securityservice.model.User;
 import com.example.securityservice.service.JwtService;
 import com.example.securityservice.service.UserService;
+import io.jsonwebtoken.Claims;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +59,14 @@ public class AuthController {
         return "Invalid token";
     }
 
+    @GetMapping("/id")
+    public String getIdByToken(@RequestParam("token") String token){
+        return String.valueOf(userService.findByUsername(jwtService.extractUsername(token.substring(7))).get().getId());
+    }
+
+    @GetMapping("/username")
+    public String getUsernameByToken(@RequestParam("token") String token){
+        return jwtService.extractUsername(token.substring(7));
+    }
 
 }

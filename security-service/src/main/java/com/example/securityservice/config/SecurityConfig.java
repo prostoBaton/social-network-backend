@@ -35,7 +35,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(registry ->{
                     registry.requestMatchers("auth/register").permitAll();
                     registry.requestMatchers("auth/token").permitAll();
-                    registry.requestMatchers("auth/validate").permitAll();})
+                    registry.requestMatchers("auth/validate").permitAll();
+                    registry.requestMatchers("auth/id").permitAll();
+                    registry.requestMatchers("auth/username").permitAll();})
                 .authenticationProvider(authenticationProvider())
                 .build();
     }
