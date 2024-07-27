@@ -1,6 +1,8 @@
 package com.example.publicationservice.model;
 
-public class Comment {
+import java.io.Serializable;
+
+public class Comment implements Serializable {
     private String username;
     private String text;
     //TODO image(blob) storage

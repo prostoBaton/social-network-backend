@@ -1,5 +1,6 @@
 package com.example.publicationservice.controller;
 
+import com.example.publicationservice.exception.PublicationNotFoundException;
 import com.example.publicationservice.model.Comment;
 import com.example.publicationservice.model.Publication;
 import com.example.publicationservice.service.PublicationService;
@@ -26,7 +27,7 @@ public class PublicationController { //TODO test likes and comments
 
     @GetMapping("/{id}")
     public Publication findById(@PathVariable String id){
-        return publicationService.findById(id).orElse(null); //TODO exception
+        return publicationService.findById(id).orElseThrow(() -> new PublicationNotFoundException("Publication not found"));
     }
 
     @PatchMapping("/{id}/like")
@@ -58,7 +59,8 @@ public class PublicationController { //TODO test likes and comments
     public String update(@PathVariable String id,
                          @RequestBody Publication publication,
                          @RequestHeader("Authorization") String authHeader){
-        return publicationService.update(id,publication,authHeader);
+         publicationService.update(id,publication,authHeader);
+        return "Publication has been updated";
     }
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable String id,

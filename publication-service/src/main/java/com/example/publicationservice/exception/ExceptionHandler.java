@@ -14,4 +14,10 @@ public class ExceptionHandler {
         ErrorResponse response = new ErrorResponse(e.getMessage(), LocalDateTime.now());
         return  new ResponseEntity<>(response, HttpStatusCode.valueOf(404));
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(UnableToUpdateException.class)
+    public ResponseEntity<ErrorResponse> unableToUpdate(UnableToUpdateException e){
+        ErrorResponse response = new ErrorResponse(e.getMessage(), LocalDateTime.now());
+        return  new ResponseEntity<>(response, HttpStatusCode.valueOf(403));
+    }
 }

@@ -5,6 +5,7 @@ import com.example.securityservice.model.User;
 import com.example.securityservice.service.JwtService;
 import com.example.securityservice.service.UserService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +54,13 @@ public class AuthController {
 
     @GetMapping("/validate")
     public String isTokenValid(@RequestParam("token") String token){
-        User user = userService.findByUsername(jwtService.extractUsername(token)).orElseThrow(EntityNotFoundException::new);
-        if (jwtService.isTokenValid(token,user))
-            return "Token is valid";
+        try {
+            User user = userService.findByUsername(jwtService.extractUsername(token)).orElseThrow(EntityNotFoundException::new);
+            if (jwtService.isTokenValid(token,user))
+                return "Token is valid";
+        } catch (ExpiredJwtException e){}
         return "Invalid token";
+
     }
 
     @GetMapping("/id")

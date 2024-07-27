@@ -45,16 +45,29 @@ services:
       - discovery-server
       - api-gateway
       - publicationsDB
+      - redis-cache
 
   publicationsDB:
     image: mongo
     hostname: publicationsDB
     container_name: publicationsDB
     ports:
-      - 27017:27017
+      - '27017:27017'
     environment:
       MONGO_INITDB_DATABASE: publicationsDB
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     volumes:
-      - ./publicationsDB:/data
+      - ./publicationsDB:/data/db
+
+  redis-cache:
+    image: redis
+    hostname: redis-cache
+    container_name: redis-cache
+    ports:
+      - '6379:6379'
+    environment:
+      REDIS_USER: admin
+      REDIS_PASSWORD: admin
+    volumes:
+      - ./redis-cache:/data

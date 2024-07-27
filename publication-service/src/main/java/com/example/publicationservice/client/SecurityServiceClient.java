@@ -2,10 +2,9 @@ package com.example.publicationservice.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient("${securiti_url}")
+@FeignClient("${security_url}")
 public interface SecurityServiceClient {
     @GetMapping("/auth/id")
     String getIdByToken(@RequestParam("token") String token);

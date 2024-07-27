@@ -32,6 +32,9 @@ dependencies {
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //implementation 'com.azure.spring:spring-cloud-azure-starter-storage'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 dependencyManagement {

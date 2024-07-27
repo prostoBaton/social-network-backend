@@ -1,21 +1,26 @@
 package com.example.publicationservice.model;
 
 
+
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 
 @Document(collection = "publication")
-public class Publication {
+public class Publication implements Serializable {
     private String id;
     private int userId;
     private String text;
 
     private Set<Integer> likes;
-    private List<Comment> comments; //or Map<Integer(userId),String(text)>
-    //TODO createdAt;
+    private List<Comment> comments;
+    private LocalDateTime createdAt;
 
     public Publication() {
     }
@@ -43,19 +48,27 @@ public class Publication {
         this.text = text;
     }
 
-    public Set<Integer> getLikes() {
-        return likes;
+    public Optional<Set<Integer>> getLikes() {
+        return Optional.ofNullable(likes);
     }
 
     public void setLikes(Set<Integer> likes) {
         this.likes = likes;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public Optional<List<Comment>> getComments() {
+        return Optional.ofNullable(comments);
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
