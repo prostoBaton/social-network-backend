@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/publication")
-public class PublicationController { //TODO test likes and comments
+public class PublicationController {
     private final PublicationService publicationService;
 
     @Autowired

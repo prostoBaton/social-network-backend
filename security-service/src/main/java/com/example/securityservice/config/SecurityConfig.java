@@ -37,7 +37,8 @@ public class SecurityConfig {
                     registry.requestMatchers("auth/token").permitAll();
                     registry.requestMatchers("auth/validate").permitAll();
                     registry.requestMatchers("auth/id").permitAll();
-                    registry.requestMatchers("auth/username").permitAll();})
+                    registry.requestMatchers("auth/username").permitAll();
+                    registry.requestMatchers("users/**").permitAll();})
                 .authenticationProvider(authenticationProvider())
                 .build();
     }

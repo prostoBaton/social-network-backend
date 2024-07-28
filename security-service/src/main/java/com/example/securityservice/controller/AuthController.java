@@ -4,7 +4,6 @@ import com.example.securityservice.dto.RequestDto;
 import com.example.securityservice.model.User;
 import com.example.securityservice.service.JwtService;
 import com.example.securityservice.service.UserService;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -15,10 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController { //TODO make all logic in UserService not in AuthController and SubscribeController
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -37,6 +35,11 @@ public class AuthController {
         User user = new User(requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
         userService.save(user);
         return "User has been registered";
+    }
+
+    @DeleteMapping("/delete")
+    public String delete(@RequestHeader("Authorization") String authHeader){
+        return userService.delete(userService.findByUsername(jwtService.extractUsername(authHeader)).orElseThrow(()->new EntityNotFoundException("User not found")));
     }
 
     @PostMapping("/token")

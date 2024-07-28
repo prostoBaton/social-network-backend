@@ -5,4 +5,10 @@ spring:
         - id: security-service
           uri: lb://security-service
           predicates:
-            - Path=/auth/**
+            - Path=/auth/**, /users/**
+        - id: publication-service
+          uri: lb://publication-service
+          predicates:
+            - Path=/publication/**
+          filters:
+            - AuthFilter
