@@ -52,7 +52,6 @@ public class PublicationController {
     public String newPublication(@RequestBody Publication publication,
                                  @RequestHeader("Authorization") String authHeader){
         return publicationService.create(publication,authHeader);
-        //TODO notification
     }
 
     @PatchMapping("/update/{id}")

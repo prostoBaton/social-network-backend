@@ -14,6 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController { //TODO make all logic in UserService not in AuthController and SubscribeController
@@ -68,12 +72,21 @@ public class AuthController { //TODO make all logic in UserService not in AuthCo
 
     @GetMapping("/id")
     public String getIdByToken(@RequestParam("token") String token){
-        return String.valueOf(userService.findByUsername(jwtService.extractUsername(token.substring(7))).get().getId());
+        return String.valueOf(userService.findByUsername(jwtService.extractUsername(token.substring(7))).orElseThrow(()-> new EntityNotFoundException("User not found")).getId());
     }
 
     @GetMapping("/username")
     public String getUsernameByToken(@RequestParam("token") String token){
         return jwtService.extractUsername(token.substring(7));
+    }
+    @GetMapping("/subs")
+    public List<String> getSubscribersByToken(@RequestParam("token") String token){
+        List<String> emails = new ArrayList<>();
+        Set<User> subscribers = userService.findByUsername(jwtService.extractUsername(token.substring(7))).orElseThrow(()-> new EntityNotFoundException("User not found")).getSubscribers();
+        for (User subscriber : subscribers) {
+            emails.add(subscriber.getEmail());
+        }
+        return emails;
     }
 
 }

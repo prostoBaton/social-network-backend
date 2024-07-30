@@ -1,16 +1,17 @@
 package com.example.publicationservice.service;
 
 import com.example.publicationservice.client.SecurityServiceClient;
+import com.example.publicationservice.dto.RabbitDto;
 import com.example.publicationservice.exception.PublicationNotFoundException;
 import com.example.publicationservice.exception.UnableToUpdateException;
 import com.example.publicationservice.model.Comment;
 import com.example.publicationservice.model.Publication;
 import com.example.publicationservice.repository.PublicationRepository;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +23,13 @@ import java.util.*;
 public class PublicationService {
     private final PublicationRepository publicationRepository;
     private final SecurityServiceClient securityServiceClient;
+    private final AmqpTemplate amqpTemplate;
 
     @Autowired
-    public PublicationService(PublicationRepository publicationRepository, SecurityServiceClient securityServiceClient) {
+    public PublicationService(PublicationRepository publicationRepository, SecurityServiceClient securityServiceClient, AmqpTemplate amqpTemplate) {
         this.publicationRepository = publicationRepository;
         this.securityServiceClient = securityServiceClient;
+        this.amqpTemplate = amqpTemplate;
     }
 
     @Cacheable(value = "Publication",
@@ -50,6 +53,13 @@ public class PublicationService {
         publication.setUserId(Integer.parseInt(securityServiceClient.getIdByToken(authHeader)));
         publication.setCreatedAt(LocalDateTime.now());
         publicationRepository.save(publication);
+
+        List<String> emails = securityServiceClient.getSubscribersByToken(authHeader);
+        for (String email : emails) {
+            RabbitDto rabbitDto = new RabbitDto(email, securityServiceClient.getUsernameByToken(authHeader) + " uploaded new publication with id="+publication.getId());
+            amqpTemplate.convertAndSend("publications_exchange","publications_routing", rabbitDto);
+        }
+
         return"Publication has been created";
     }
 

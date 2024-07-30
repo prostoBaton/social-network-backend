@@ -46,6 +46,7 @@ services:
       - api-gateway
       - publicationsDB
       - redis-cache
+      - rabbitMQ
 
   publicationsDB:
     image: mongo
@@ -71,3 +72,26 @@ services:
       REDIS_PASSWORD: admin
     volumes:
       - ./redis-cache:/data
+
+  rabbitMQ:
+    image: rabbitmq
+    hostname: rabbitMQ
+    container_name: rabbitMQ
+    ports:
+      - '15672:15672'
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - ./rabbitMQ:/data
+
+  notification-service:
+    build: ./notification-service
+    deploy:
+      mode: replicated
+      replicas: 2
+    depends_on:
+      - discovery-server
+      - api-gateway
+      - publication-service
+      - rabbitMQ
