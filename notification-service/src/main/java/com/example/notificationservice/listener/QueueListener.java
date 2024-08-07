@@ -17,7 +17,14 @@ public class QueueListener {
     }
 
     @RabbitListener(queues = "publications")
-    public void listen(RabbitDto rabbitDto){
+    public void listenPub(RabbitDto rabbitDto){
+        System.out.println(rabbitDto.getMessage());
+        System.out.println(rabbitDto.getEmail());
+        emailSender.send(rabbitDto.getEmail(), rabbitDto.getMessage());
+    }
+
+    @RabbitListener(queues = "activations")
+    public void listenAct(RabbitDto rabbitDto){
         System.out.println(rabbitDto.getMessage());
         System.out.println(rabbitDto.getEmail());
         emailSender.send(rabbitDto.getEmail(), rabbitDto.getMessage());

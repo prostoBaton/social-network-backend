@@ -1,10 +1,11 @@
-package com.example.notificationservice.config;
+package com.example.securityservice.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -24,43 +25,32 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue publicationsQueue(){
-        return new Queue("publications");
-    }
-
-    @Bean
     public Queue activationsQueue(){
         return new Queue("activations");
     }
 
     @Bean
-    public TopicExchange publicationsExchange(){
-        return new TopicExchange("publications_exchange");
-    }
-
-    @Bean
-    public TopicExchange activationsExchange(){
+    public TopicExchange exchange(){
         return new TopicExchange("activations_exchange");
     }
 
     @Bean
-    public Binding publicationsBinding(){
-        return BindingBuilder
-                .bind(publicationsQueue())
-                .to(publicationsExchange())
-                .with("publications_routing");
-    }
-
-    @Bean
-    public Binding activationsBinding(){
+    public Binding binding(){
         return BindingBuilder
                 .bind(activationsQueue())
-                .to(activationsExchange())
+                .to(exchange())
                 .with("activations_routing");
     }
 
     @Bean
     public MessageConverter messageConverter(){
         return new Jackson2JsonMessageConverter();
+    }
+
+    @Bean
+    public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory){
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(messageConverter());
+        return rabbitTemplate;
     }
 }

@@ -2,6 +2,7 @@ package com.example.securityservice.model;
 
 import com.example.securityservice.dto.ResponseDto;
 import jakarta.persistence.*;
+import jakarta.ws.rs.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,7 +21,6 @@ public class User implements UserDetails {
     private int id;
 
     @Column(name = "username")
-
     private String username;
 
     @Column(name = "password")
@@ -29,9 +29,12 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
+    @Column(name = "isEnabled")
+    private boolean isEnabled;
+
     @ManyToMany
     @JoinTable(name = "subs", joinColumns = @JoinColumn(name="subscribers"), inverseJoinColumns = @JoinColumn(name = "authors"))
-    private Set<User> subscriptions;
+    private Set<User> subscriptions; //TODO cascade
 
     @ManyToMany(mappedBy = "subscriptions")
     private Set<User> subscribers;
@@ -73,6 +76,15 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     @Override

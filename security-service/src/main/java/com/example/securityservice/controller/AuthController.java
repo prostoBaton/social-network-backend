@@ -41,6 +41,12 @@ public class AuthController { //TODO make all logic in UserService not in AuthCo
         return "User has been registered";
     }
 
+    @GetMapping("/activate")
+    public String activate(@RequestParam String code){
+        System.out.println(code);
+        return userService.activate(code);
+    }
+
     @DeleteMapping("/delete")
     public String delete(@RequestHeader("Authorization") String authHeader){
         return userService.delete(userService.findByUsername(jwtService.extractUsername(authHeader)).orElseThrow(()->new EntityNotFoundException("User not found")));
@@ -56,6 +62,8 @@ public class AuthController { //TODO make all logic in UserService not in AuthCo
                 requestDto.getPassword()));
         if (authentication.isAuthenticated())
             return jwtService.generateToken(user);
+        if (!user.isEnabled())
+            return "Your account is not activated";
         return "Invalid username or password";
     }
 

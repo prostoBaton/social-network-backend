@@ -6,6 +6,7 @@ import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFac
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,7 +42,9 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                     authHeader = authHeader.substring(7);
 
                 RequestEntity<Void> requestEntity = new RequestEntity<>(HttpMethod.GET, URI.create(validateUrl + authHeader));
-                restTemplate.exchange(requestEntity,String.class);
+                ResponseEntity<String> response = restTemplate.exchange(requestEntity,String.class);
+                if (response.getBody().equals("Invalid token"))
+                    throw new RuntimeException("Invalid token");
             }
 
             return chain.filter(exchange);
