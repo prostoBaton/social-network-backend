@@ -11,3 +11,21 @@
 - PostgreSQL
 - MongoDB
 - Redis
+
+## Services
+
+### API Gateway:
+Allows for seamless data transfer between endpoints and ensuring that User using JWT token.
+
+### Discovery server:
+Detects the other services.
+
+### Notification service:
+Has the responsibility to send emails using RabbitMQ to receive information from Publication and Security services.
+
+### Publication service:
+Allows you to CRUD publications and interract with them(press like and write comments). This servise does not contain any information about User and take it from JWT and Feign Client. The service is also capable of caching popular posts using Redis, which reduces the load on the database
+
+documentation will be here tommorow(i hope so)
+
+### Security service:
