@@ -5,10 +5,10 @@ import com.example.publicationservice.model.Comment;
 import com.example.publicationservice.model.Publication;
 import com.example.publicationservice.service.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/publication")
@@ -21,8 +21,8 @@ public class PublicationController {
     }
 
     @GetMapping
-    public List<Publication> findAll(){
-        return publicationService.findAll(); //TODO pages
+    public Page<Publication> findAll(@RequestParam(value = "page", defaultValue = "0") Integer page){
+        return publicationService.findAll(page);
     }
 
     @GetMapping("/{id}")

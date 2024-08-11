@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +42,8 @@ public class PublicationService {
         return publicationRepository.findById(id);
     }
 
-    public List<Publication> findAll(){
-        return publicationRepository.findAll();
+    public Page<Publication> findAll(int page){
+        return publicationRepository.findAll(PageRequest.of(page,5));
     }
 
     public List<Publication> findAllByUserId(int userId){

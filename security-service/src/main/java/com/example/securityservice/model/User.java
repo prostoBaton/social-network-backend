@@ -2,7 +2,6 @@ package com.example.securityservice.model;
 
 import com.example.securityservice.dto.ResponseDto;
 import jakarta.persistence.*;
-import jakarta.ws.rs.DefaultValue;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -34,7 +33,7 @@ public class User implements UserDetails {
 
     @ManyToMany
     @JoinTable(name = "subs", joinColumns = @JoinColumn(name="subscribers"), inverseJoinColumns = @JoinColumn(name = "authors"))
-    private Set<User> subscriptions; //TODO cascade
+    private Set<User> subscriptions;
 
     @ManyToMany(mappedBy = "subscriptions")
     private Set<User> subscribers;

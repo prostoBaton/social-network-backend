@@ -20,7 +20,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController { //TODO make all logic in UserService not in AuthController and SubscribeController
+public class AuthController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -37,13 +37,11 @@ public class AuthController { //TODO make all logic in UserService not in AuthCo
         if (bindingResult.hasErrors())
             return bindingResult.getFieldError().getDefaultMessage();
         User user = new User(requestDto.getUsername(), requestDto.getPassword(), requestDto.getEmail());
-        userService.save(user);
-        return "User has been registered";
+        return userService.save(user);
     }
 
     @GetMapping("/activate")
     public String activate(@RequestParam String code){
-        System.out.println(code);
         return userService.activate(code);
     }
 

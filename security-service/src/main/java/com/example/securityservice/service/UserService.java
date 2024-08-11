@@ -47,7 +47,7 @@ public class UserService {
     }
 
     @Transactional
-    public void save(User user){
+    public String save(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
@@ -59,10 +59,18 @@ public class UserService {
 
         RabbitDto rabbitDto = new RabbitDto(user.getEmail(), "Your activation code is " + activation.getCode());
         amqpTemplate.convertAndSend("activations_exchange","activations_routing", rabbitDto);
+
+        return "User has been registered";
     }
 
     @Transactional
     public String delete(User user) {
+        for (User sub : user.getSubscriptions()) {
+            sub.getSubscribers().remove(user);
+        }
+        for (User sub : user.getSubscribers()) {
+            sub.getSubscriptions().remove(user);
+        }
         userRepository.delete(user);
         return "User has been deleted";
     }
