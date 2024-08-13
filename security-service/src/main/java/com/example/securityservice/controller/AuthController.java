@@ -45,9 +45,18 @@ public class AuthController {
         return userService.activate(code);
     }
 
+    @PatchMapping("/update")
+    public String update(@Valid @RequestBody RequestDto userUpd,
+                         @RequestHeader("Authorization") String authHeader,
+                         BindingResult bindingResult){
+        if (bindingResult.hasErrors())
+            return bindingResult.getFieldError().getDefaultMessage();
+        return userService.update(jwtService.extractUsername(authHeader.substring(7)), userUpd);
+    }
+
     @DeleteMapping("/delete")
     public String delete(@RequestHeader("Authorization") String authHeader){
-        return userService.delete(userService.findByUsername(jwtService.extractUsername(authHeader)).orElseThrow(()->new EntityNotFoundException("User not found")));
+        return userService.delete(userService.findByUsername(jwtService.extractUsername(authHeader.substring(7))).orElseThrow(()->new EntityNotFoundException("User not found")));
     }
 
     @PostMapping("/token")

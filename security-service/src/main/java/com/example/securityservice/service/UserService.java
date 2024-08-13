@@ -1,6 +1,7 @@
 package com.example.securityservice.service;
 
 import com.example.securityservice.dto.RabbitDto;
+import com.example.securityservice.dto.RequestDto;
 import com.example.securityservice.dto.ResponseDto;
 import com.example.securityservice.model.Activation;
 import com.example.securityservice.model.User;
@@ -50,16 +51,7 @@ public class UserService {
     public String save(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
-
-        Activation activation = new Activation();
-        activation.setUserId(findByUsername(user.getUsername()).get().getId());
-        activation.setCode(UUID.randomUUID().toString().replaceAll("_", "1").replaceAll("-","0"));
-        activation.setExpirationTime(LocalDateTime.now().plusHours(2));
-        activationRepository.save(activation);
-
-        RabbitDto rabbitDto = new RabbitDto(user.getEmail(), "Your activation code is " + activation.getCode());
-        amqpTemplate.convertAndSend("activations_exchange","activations_routing", rabbitDto);
-
+        sendActivation(user);
         return "User has been registered";
     }
 
@@ -73,6 +65,24 @@ public class UserService {
         }
         userRepository.delete(user);
         return "User has been deleted";
+    }
+
+    @Transactional
+    public String update(String username, RequestDto userUpd) {
+        User user = findByUsername(username).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(userUpd.getPassword()));
+        user.setUsername(userUpd.getUsername());
+
+        if (user.getEmail().equals(userUpd.getEmail())){
+            userRepository.save(user);
+            return "User has been updated";
+        }
+
+        user.setEmail(userUpd.getEmail());
+        user.setEnabled(false);
+        userRepository.save(user);
+        sendActivation(user);
+        return "User has been updated. Please, confirm your email with new activation code we sent you";
     }
 
     @Transactional
@@ -107,5 +117,17 @@ public class UserService {
         userRepository.save(user);
         activationRepository.delete(activation);
         return "User has been activated";
+    }
+
+    @Transactional
+    public void sendActivation(User user){
+        Activation activation = new Activation();
+        activation.setUserId(findByUsername(user.getUsername()).get().getId());
+        activation.setCode(UUID.randomUUID().toString().replaceAll("_", "1").replaceAll("-","0"));
+        activation.setExpirationTime(LocalDateTime.now().plusHours(2));
+        activationRepository.save(activation);
+
+        RabbitDto rabbitDto = new RabbitDto(user.getEmail(), "Your activation code is " + activation.getCode());
+        amqpTemplate.convertAndSend("activations_exchange","activations_routing", rabbitDto);
     }
 }
