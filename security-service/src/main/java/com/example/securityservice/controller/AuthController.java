@@ -85,6 +85,7 @@ public class AuthController {
 
     }
 
+    //Endpoints for OpenFeign clients
     @GetMapping("/id")
     public String getIdByToken(@RequestParam("token") String token){
         return String.valueOf(userService.findByUsername(jwtService.extractUsername(token.substring(7))).orElseThrow(()-> new EntityNotFoundException("User not found")).getId());
